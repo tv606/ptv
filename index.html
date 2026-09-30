@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLUTO TV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ffe600;
+      --bg: #000000;
+      --surface: #121212;
+      --surface-light: #1f1f1f;
+      --border: #2a2a2a;
+      --text-muted: #8e8e93;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Scrollbar Tasarımı */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+    
+    body {
+      background-color: var(--bg);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 60px 1fr;
+      overflow: hidden;
+    }
+
+    header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      padding: 8px 16px 8px 40px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+    }
+
+    .search-box .material-icons-round {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 20px;
+    }
+
+    .app-body {
+      display: grid;
+      grid-template-columns: 220px 1fr 1fr;
+      overflow: hidden;
+    }
+
+    .categories-bar {
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      padding: 12px;
+      overflow-y: auto;
+    }
+
+    .cat-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding-left: 8px;
+    }
+
+    .cat-item {
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #ccc;
+      cursor: pointer;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+
+    .cat-item:hover {
+      background: var(--surface-light);
+      color: #fff;
+    }
+
+    .cat-item.active {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .stage {
+      background: #000;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .iframe-wrapper {
+      flex: 1;
+      position: relative;
+      background: #000;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .now-playing {
+      padding: 14px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .now-playing img {
+      width: 48px;
+      height: 36px;
+      object-fit: contain;
+      background: #000;
+      border-radius: 4px;
+    }
+
+    .channel-meta h3 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .channel-meta p {
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .channels-bar {
+      background: var(--bg);
+      padding: 12px;
+      overflow-y: auto;
+    }
+
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card:hover {
+      background: var(--surface-light);
+      border-color: #444;
+    }
+
+    .card.active {
+      border-color: var(--primary);
+      background: var(--surface-light);
+    }
+
+    .card img {
+      width: 40px;
+      height: 30px;
+      object-fit: contain;
+      flex-shrink: 0;
+      background: #000;
+      border-radius: 2px;
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+    }
+
+    .card-category {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .overlay-status {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1024px) {
+      .app-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 300px 1fr;
+        overflow-y: auto;
+      }
+      .categories-bar { display: none; }
+      .stage { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="material-icons-round">tv</span> PLUTO TV
+    </div>
+    <div class="search-box">
+      <span class="material-icons-round">search</span>
+      <input type="text" id="searchInput" placeholder="KANAL ARA...">
+    </div>
+  </header>
+
+  <div class="app-body">
+    <div class="categories-bar">
+      <div class="cat-title">KATEGORİLER</div>
+      <div id="categoryList">
+        <div class="cat-item active" onclick="selectCategory('', this)">TÜM KANALLAR</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="iframe-wrapper">
+        <div id="status" class="overlay-status">KANAL YÜKLENİYOR...</div>
+        <iframe id="player" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+      <div class="now-playing">
+        <img id="activeLogo" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>" alt="">
+        <div class="channel-meta">
+          <h3 id="activeTitle">KANAL SEÇİLMEDİ</h3>
+          <p id="activeCategory">PLUTO TV STREAM</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="channels-bar" id="channelsBar">
+      <div class="channel-grid" id="channelGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const M3U_URL = "https://raw.githubusercontent.com/BuddyChewChew/app-m3u-generator/refs/heads/main/playlists/plutotv_all.m3u";
+    let channels = [];
+    let filteredChannels = [];
+    let selectedCategory = '';
+    
+    const PAGE_SIZE = 200;
+    let currentPage = 0;
+    let isLoading = false;
+
+    const player = document.getElementById('player');
+    const status = document.getElementById('status');
+    const channelGrid = document.getElementById('channelGrid');
+    const channelsBar = document.getElementById('channelsBar');
+    const categoryList = document.getElementById('categoryList');
+    const searchInput = document.getElementById('searchInput');
+
+    const activeTitle = document.getElementById('activeTitle');
+    const activeCategory = document.getElementById('activeCategory');
+    const activeLogo = document.getElementById('activeLogo');
+
+    async function init() {
+      try {
+        const res = await fetch(M3U_URL);
+        const text = await res.text();
+        channels = parseM3U(text);
+        renderCategories();
+        applyFilters();
+        status.textContent = 'İzlemek istediğiniz kanala tıklayın.';
+      } catch (err) {
+        status.textContent = 'M3U verisi yüklenemedi.';
+      }
+    }
+
+    function parseM3U(data) {
+      const lines = data.split('\n');
+      const list = [];
+      let current = {};
+
+      for (let line of lines) {
+        line = line.trim();
+        if (line.startsWith('#EXTINF:')) {
+          const name = line.match(/,(.+)$/);
+          const logo = line.match(/tvg-logo="([^"]+)"/);
+          const group = line.match(/group-title="([^"]+)"/);
+
+          current = {
+            title: name ? name[1].trim() : 'Kanal',
+            logo: logo ? logo[1] : '',
+            category: group ? group[1].trim() : 'Genel'
+          };
+        } else if (line.startsWith('http')) {
+          current.url = line;
+          list.push(current);
+          current = {};
+        }
+      }
+      return list;
+    }
+
+    function renderCategories() {
+      const categories = [...new Set(channels.map(c => c.category))].sort();
+      categories.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = 'cat-item';
+        div.textContent = cat;
+        div.onclick = function() {
+          selectCategory(cat, this);
+        };
+        categoryList.appendChild(div);
+      });
+    }
+
+    function selectCategory(cat, element) {
+      document.querySelectorAll('.cat-item').forEach(e => e.classList.remove('active'));
+      element.classList.add('active');
+      filterCategory(cat);
+    }
+
+    function renderNextBatch() {
+      if (isLoading) return;
+      isLoading = true;
+
+      const start = currentPage * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const batch = filteredChannels.slice(start, end);
+
+      const fragment = document.createDocumentFragment();
+      batch.forEach(channel => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${channel.logo}" loading="lazy" onerror="this.style.opacity='0.2'" alt="">
+          <div class="card-info">
+            <div class="card-title">${channel.title}</div>
+            <div class="card-category">${channel.category}</div>
+          </div>
+        `;
+        card.onclick = () => playChannel(channel, card);
+        fragment.appendChild(card);
+      });
+
+      channelGrid.appendChild(fragment);
+      currentPage++;
+      isLoading = false;
+    }
+
+    function playChannel(channel, card) {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      if (card) card.classList.add('active');
+
+      status.style.display = 'none';
+      activeTitle.textContent = channel.title;
+      activeCategory.textContent = channel.category;
+      activeLogo.src = channel.logo;
+
+      player.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-presentation");
+      player.src = channel.url;
+    }
+
+    function filterCategory(cat) {
+      selectedCategory = cat;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = searchInput.value.toLowerCase();
+      filteredChannels = channels.filter(c => {
+        const matchesCat = !selectedCategory || c.category === selectedCategory;
+        const matchesSearch = c.title.toLowerCase().includes(q);
+        return matchesCat && matchesSearch;
+      });
+      
+      channelGrid.innerHTML = '';
+      currentPage = 0;
+      channelsBar.scrollTop = 0;
+      renderNextBatch();
+    }
+
+    channelsBar.addEventListener('scroll', () => {
+      if (channelsBar.scrollTop + channelsBar.clientHeight >= channelsBar.scrollHeight - 100) {
+        if (currentPage * PAGE_SIZE < filteredChannels.length) {
+          renderNextBatch();
+        }
+      }
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+
+    init();
+  </script>
+</body>
+</html>
