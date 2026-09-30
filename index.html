@@ -99,6 +99,34 @@
       font-size: 20px;
     }
 
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .scale-btn {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      color: #ccc;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .scale-btn:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    .scale-btn.active {
+      background: var(--primary);
+      color: #000;
+      border-color: var(--primary);
+    }
+
     .app-body {
       display: grid;
       grid-template-columns: 220px 1fr 1fr;
@@ -195,25 +223,126 @@
 
     .channels-bar {
       background: var(--bg);
-      padding: 12px;
+      padding: 14px;
       overflow-y: auto;
     }
 
     .channel-grid {
       display: grid;
+      gap: 16px;
+    }
+
+    /* Boyut Modları */
+    .grid-1x {
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 10px;
+    }
+
+    .grid-1x .card {
+      padding: 10px;
+      gap: 10px;
+      border-radius: 4px;
+    }
+
+    .grid-1x .card img {
+      width: 40px;
+      height: 30px;
+      border-radius: 2px;
+    }
+
+    .grid-1x .card-title {
+      font-size: 0.75rem;
+    }
+
+    .grid-1x .card-category {
+      font-size: 0.65rem;
+      margin-top: 2px;
+    }
+
+    .grid-2x {
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+
+    .grid-2x .card {
+      padding: 16px;
+      gap: 16px;
+      border-radius: 6px;
+    }
+
+    .grid-2x .card img {
+      width: 80px;
+      height: 60px;
+      border-radius: 4px;
+    }
+
+    .grid-2x .card-title {
+      font-size: 1.2rem;
+    }
+
+    .grid-2x .card-category {
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .grid-3x {
+      grid-template-columns: repeat(auto-fill, minmax(540px, 1fr));
+      gap: 24px;
+    }
+
+    .grid-3x .card {
+      padding: 24px;
+      gap: 24px;
+      border-radius: 8px;
+    }
+
+    .grid-3x .card img {
+      width: 120px;
+      height: 90px;
+      border-radius: 6px;
+    }
+
+    .grid-3x .card-title {
+      font-size: 1.8rem;
+    }
+
+    .grid-3x .card-category {
+      font-size: 1.3rem;
+      margin-top: 6px;
+    }
+
+    .grid-4x {
+      grid-template-columns: repeat(auto-fill, minmax(720px, 1fr));
+      gap: 32px;
+    }
+
+    .grid-4x .card {
+      padding: 32px;
+      gap: 32px;
+      border-radius: 10px;
+    }
+
+    .grid-4x .card img {
+      width: 160px;
+      height: 120px;
+      border-radius: 8px;
+    }
+
+    .grid-4x .card-title {
+      font-size: 2.4rem;
+    }
+
+    .grid-4x .card-category {
+      font-size: 1.7rem;
+      margin-top: 8px;
     }
 
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
     }
 
     .card:hover {
@@ -227,12 +356,9 @@
     }
 
     .card img {
-      width: 40px;
-      height: 30px;
       object-fit: contain;
       flex-shrink: 0;
       background: #000;
-      border-radius: 2px;
     }
 
     .card-info {
@@ -242,7 +368,6 @@
     }
 
     .card-title {
-      font-size: 0.75rem;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -251,9 +376,7 @@
     }
 
     .card-category {
-      font-size: 0.65rem;
       color: var(--text-muted);
-      margin-top: 2px;
     }
 
     .overlay-status {
@@ -276,6 +399,9 @@
       }
       .categories-bar { display: none; }
       .stage { border-right: none; }
+      .channel-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
   </style>
 </head>
@@ -288,6 +414,12 @@
     <div class="search-box">
       <span class="material-icons-round">search</span>
       <input type="text" id="searchInput" placeholder="KANAL ARA...">
+    </div>
+    <div class="header-controls">
+      <button class="scale-btn" onclick="setScale(1)">1X</button>
+      <button class="scale-btn active" onclick="setScale(2)">2X</button>
+      <button class="scale-btn" onclick="setScale(3)">3X</button>
+      <button class="scale-btn" onclick="setScale(4)">4X</button>
     </div>
   </header>
 
@@ -314,7 +446,7 @@
     </div>
 
     <div class="channels-bar" id="channelsBar">
-      <div class="channel-grid" id="channelGrid"></div>
+      <div class="channel-grid grid-2x" id="channelGrid"></div>
     </div>
   </div>
 
@@ -324,8 +456,16 @@
     let filteredChannels = [];
     let selectedCategory = '';
     
+    let currentScale = 2;
     let currentPage = 0;
     let isLoading = false;
+
+    const scaleConfigs = {
+      1: { cardHeight: 52, minWidth: 190, batchStep: 50 },
+      2: { cardHeight: 108, minWidth: 376, batchStep: 30 },
+      3: { cardHeight: 160, minWidth: 560, batchStep: 20 },
+      4: { cardHeight: 212, minWidth: 752, batchStep: 10 }
+    };
 
     const player = document.getElementById('player');
     const status = document.getElementById('status');
@@ -396,12 +536,22 @@
       filterCategory(cat);
     }
 
+    function setScale(scale) {
+      currentScale = scale;
+      document.querySelectorAll('.scale-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index + 1 === scale);
+      });
+      
+      channelGrid.className = `channel-grid grid-${scale}x`;
+      applyFilters();
+    }
+
     function getInitialBatchSize() {
+      const config = scaleConfigs[currentScale];
       const containerHeight = channelsBar.clientHeight || window.innerHeight;
-      const cardHeight = 52;
-      const cardsPerRow = Math.floor(channelsBar.clientWidth / 190) || 1;
-      const visibleRows = Math.ceil(containerHeight / cardHeight);
-      return Math.max(20, (visibleRows + 2) * cardsPerRow);
+      const cardsPerRow = Math.floor(channelsBar.clientWidth / config.minWidth) || 1;
+      const visibleRows = Math.ceil(containerHeight / config.cardHeight);
+      return Math.max(10, (visibleRows + 2) * cardsPerRow);
     }
 
     function renderBatch(size) {
@@ -468,7 +618,7 @@
     channelsBar.addEventListener('scroll', () => {
       if (channelsBar.scrollTop + channelsBar.clientHeight >= channelsBar.scrollHeight - 100) {
         if (currentPage < filteredChannels.length) {
-          renderBatch(50);
+          renderBatch(scaleConfigs[currentScale].batchStep);
         }
       }
     });
