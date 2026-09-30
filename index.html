@@ -416,8 +416,8 @@
       <input type="text" id="searchInput" placeholder="KANAL ARA...">
     </div>
     <div class="header-controls">
-      <button class="scale-btn" onclick="setScale(1)">1X</button>
-      <button class="scale-btn active" onclick="setScale(2)">2X</button>
+      <button class="scale-btn active" onclick="setScale(1)">1X</button>
+      <button class="scale-btn" onclick="setScale(2)">2X</button>
       <button class="scale-btn" onclick="setScale(3)">3X</button>
       <button class="scale-btn" onclick="setScale(4)">4X</button>
     </div>
@@ -446,17 +446,17 @@
     </div>
 
     <div class="channels-bar" id="channelsBar">
-      <div class="channel-grid grid-2x" id="channelGrid"></div>
+      <div class="channel-grid grid-1x" id="channelGrid"></div>
     </div>
   </div>
 
   <script>
-    const M3U_URL = "https://raw.githubusercontent.com/BuddyChewChew/app-m3u-generator/refs/heads/main/playlists/plutotv_all.m3u";
+    const M3U_URL = "https://raw.githubusercontent.com/tv606/ptv/refs/heads/main/plutotv_all.m3u";
     let channels = [];
     let filteredChannels = [];
     let selectedCategory = '';
     
-    let currentScale = 2;
+    let currentScale = 1;
     let currentPage = 0;
     let isLoading = false;
 
