@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PLUTO TV</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000000'/><circle cx='50' cy='50' r='35' fill='%23ffe600'/><text x='50' y='65' font-size='45' font-family='sans-serif' font-weight='900' fill='%23000000' text-anchor='middle'>P</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
@@ -18,7 +19,6 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Scrollbar Tasarımı */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -324,7 +324,6 @@
     let filteredChannels = [];
     let selectedCategory = '';
     
-    const PAGE_SIZE = 200;
     let currentPage = 0;
     let isLoading = false;
 
@@ -397,13 +396,20 @@
       filterCategory(cat);
     }
 
-    function renderNextBatch() {
+    function getInitialBatchSize() {
+      const containerHeight = channelsBar.clientHeight || window.innerHeight;
+      const cardHeight = 52;
+      const cardsPerRow = Math.floor(channelsBar.clientWidth / 190) || 1;
+      const visibleRows = Math.ceil(containerHeight / cardHeight);
+      return Math.max(20, (visibleRows + 2) * cardsPerRow);
+    }
+
+    function renderBatch(size) {
       if (isLoading) return;
       isLoading = true;
 
-      const start = currentPage * PAGE_SIZE;
-      const end = start + PAGE_SIZE;
-      const batch = filteredChannels.slice(start, end);
+      const start = currentPage;
+      const batch = filteredChannels.slice(start, start + size);
 
       const fragment = document.createDocumentFragment();
       batch.forEach(channel => {
@@ -421,7 +427,7 @@
       });
 
       channelGrid.appendChild(fragment);
-      currentPage++;
+      currentPage += batch.length;
       isLoading = false;
     }
 
@@ -454,13 +460,15 @@
       channelGrid.innerHTML = '';
       currentPage = 0;
       channelsBar.scrollTop = 0;
-      renderNextBatch();
+
+      const dynamicSize = getInitialBatchSize();
+      renderBatch(dynamicSize);
     }
 
     channelsBar.addEventListener('scroll', () => {
       if (channelsBar.scrollTop + channelsBar.clientHeight >= channelsBar.scrollHeight - 100) {
-        if (currentPage * PAGE_SIZE < filteredChannels.length) {
-          renderNextBatch();
+        if (currentPage < filteredChannels.length) {
+          renderBatch(50);
         }
       }
     });
